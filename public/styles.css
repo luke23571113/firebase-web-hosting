@@ -1,0 +1,32 @@
+h1 {
+    font-family: 'Arial', sans-serif; /* Changes the font to Arial */
+    font-size: 24px; /* Adjusts the font size */
+    color: #3498db; /* Changes the text color to a shade of blue */
+    text-align: center; /* Centers the header text */
+    padding: 10px; /* Adds some padding around the text */
+    border-bottom: 2px solid #3498db; /* Adds a bottom border to the header */
+    animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+p {
+    animation: slideIn 2s ease-in-out;
+}
+
