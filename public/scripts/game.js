@@ -7,11 +7,22 @@ class Game {
         this.score = 0;
 
         // Define the spaceship and projectiles
-        this.spaceship = { x: this.canvas.width / 2, y: this.canvas.height - 30, width: 30, height: 30, speed: 5 };
+        this.spaceship = { x: this.canvas.width / 2, y: this.canvas.height - 30, width: 30, height: 30, speed: 3 };
         this.projectiles = [];
+
+        // Track the time since the last projectile was fired
+        this.lastProjectileTime = 0;
+        this.projectileDelay = 1000 / 3; // Fire three projectiles per second
 
         // Define the stars
         this.stars = this.createStars(100);
+
+        // Define an object to store the state of the keys
+        this.keys = {};
+
+        // Handle keyboard input
+        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        document.addEventListener('keyup', (e) => this.handleKeyUp(e));
 
         // Start game loop
         this.update();
@@ -71,14 +82,18 @@ class Game {
     }
 
     shoot() {
-        const projectile = {
-            x: this.spaceship.x + this.spaceship.width / 2 - 2.5, // Center of the spaceship
-            y: this.spaceship.y - 10,
-            width: 5,
-            height: 10,
-            speed: 7
-        };
-        this.projectiles.push(projectile);
+        const currentTime = Date.now();
+        if (currentTime - this.lastProjectileTime > this.projectileDelay) {
+            const projectile = {
+                x: this.spaceship.x + this.spaceship.width / 2 - 2.5, // Center of the spaceship
+                y: this.spaceship.y - 10,
+                width: 5,
+                height: 10,
+                speed: 7
+            };
+            this.projectiles.push(projectile);
+            this.lastProjectileTime = currentTime;
+        }
     }
 
     updateProjectiles() {
@@ -90,7 +105,26 @@ class Game {
         }
     }
 
+    handleKeyDown(e) {
+        this.keys[e.key] = true;
+    }
+
+    handleKeyUp(e) {
+        this.keys[e.key] = false;
+    }
+
     update() {
+        // Update the spaceship position based on the keys
+        if (this.keys['ArrowRight']) {
+            this.spaceship.x = Math.min(this.canvas.width - this.spaceship.width, this.spaceship.x + this.spaceship.speed);
+        }
+        if (this.keys['ArrowLeft']) {
+            this.spaceship.x = Math.max(0, this.spaceship.x - this.spaceship.speed);
+        }
+        if (this.keys[' ']) {  // Space bar to shoot
+            this.shoot();
+        }
+
         this.updateProjectiles();
         this.redraw();
 
