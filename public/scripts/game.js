@@ -7,7 +7,7 @@ class Game {
         this.score = 0;
 
         // Define the spaceship and projectiles
-        this.spaceship = { x: this.canvas.width / 2, y: this.canvas.height - 30, width: 30, height: 30, speed: 3 };
+        this.spaceship = { x: this.canvas.width / 2, y: this.canvas.height - 30, width: 30, height: 30, speed: 5 };
         this.projectiles = [];
 
         // Track the time since the last projectile was fired
@@ -20,12 +20,12 @@ class Game {
         // Define an object to store the state of the keys
         this.keys = {};
 
-        // Define the enemies
-        this.enemies = [
-            new Enemy(100, 100, 30, 30),
-            new Enemy(200, 100, 30, 30),
-            // Add more enemies as needed
-        ];
+        // Define the enemies in two rows
+        this.enemies = [];
+        for (let i = 0; i < 10; i++) {
+            this.enemies.push(new Enemy(i * 30, 100, 20, 20, 1, this.canvas.width, this.canvas.height));
+            this.enemies.push(new Enemy(i * 30, 130, 20, 20, 1, this.canvas.width, this.canvas.height));
+        }
 
         // Handle keyboard input
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -125,7 +125,7 @@ class Game {
                 y: this.spaceship.y - 10,
                 width: 5,
                 height: 10,
-                speed: 7
+                speed: 15 
             };
             this.projectiles.push(projectile);
             this.lastProjectileTime = currentTime;
@@ -161,6 +161,11 @@ class Game {
             this.shoot();
         }
 
+        // Update each enemy
+        for (const enemy of this.enemies) {
+            enemy.update();
+        }
+
         this.updateProjectiles();
         this.checkCollisions();
         this.redraw();
@@ -172,12 +177,27 @@ class Game {
 }
 
 class Enemy {
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height, speed, canvasWidth, canvasHeight) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.speed = speed;
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
         this.isAlive = true;
+    }
+
+    update() {
+        if (this.isAlive) {
+            this.x += this.speed;
+
+            // Change direction if enemy hits the edge of the canvas
+            if (this.x + this.width > this.canvasWidth || this.x < 0) {
+                this.speed *= -1;
+                this.y += this.height; // Move down a row when direction changes
+            }
+        }
     }
 
     draw(ctx) {
@@ -187,6 +207,8 @@ class Enemy {
         }
     }
 }
+
+
 
 // Initialize the game
 document.myGame = new Game();
